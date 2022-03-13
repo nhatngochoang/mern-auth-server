@@ -134,6 +134,56 @@ const userController = {
          return res.status(500).json({ msg: err.message });
       }
    },
+   forgot: async (req, res) => {
+      try {
+         // get email
+         const { email } = req.body;
+
+         // check email
+         const user = await User.findOne({ email });
+         if (!user)
+            return res
+               .status(400)
+               .json({ msg: "This email is not registered in our system." });
+
+         // create ac token
+         const ac_token = createToken.access({ id: user.id });
+
+         // send email
+         const url = `http://localhost:3000/auth/reset-password/${ac_token}`;
+         console.log(url)
+         const name = user.name;
+         sendMail.sendEmailReset(email, url, "Reset your password", name);
+
+         // success
+         res
+            .status(200)
+            .json({ msg: "Re-send the password, please check your email." });
+      } catch (err) {
+         res.status(500).json({ msg: err.message });
+      }
+   },
+   reset: async (req, res) => {
+      try {
+         // get new password
+         const { password } = req.body;
+
+         // hash password
+         const salt = await bcrypt.genSalt();
+         const hashPassword = await bcrypt.hash(password, salt);
+
+         // update password in DB
+         await User.findOneAndUpdate(
+            { _id: req.user.id },
+            { password: hashPassword }
+         );
+
+         // reset success
+         res.status(200).json({ msg: "Password was updated successfully." });
+      } catch (err) {
+         res.status(500).json({ msg: err.message });
+      }
+   },
 };
 
 module.exports = userController;
