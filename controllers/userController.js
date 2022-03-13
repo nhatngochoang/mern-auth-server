@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const validateEmail = require("../helpers/validateEmail");
 const createToken = require("../helpers/createToken");
 const sendMail = require("../helpers/sendMail");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
 const userController = {
@@ -40,6 +41,7 @@ const userController = {
          // create token
          const newUser = { name, email, password: hashPassword };
          const activation_token = createToken.activation(newUser);
+         console.log(activation_token)
 
          // send emailconst
          const url = `http://localhost:3000/api/auth/activate/${activation_token}`;
@@ -47,6 +49,38 @@ const userController = {
 
          // registration success
          res.status(200).json({ msg: "Welcome! Please check your email." });
+      } catch (err) {
+         res.status(500).json({ msg: err.message });
+      }
+   },
+   activate: async (req, res) => {
+      try {
+         // get token
+         const { activation_token } = req.body;
+
+         // verify token
+         const user = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN);
+         const { name, email, password } = user;
+
+         // double check user
+         const check = await User.findOne({ email });
+         if (check)
+            return res
+               .status(400)
+               .json({ msg: "This email is already registered." });
+
+         // add user to DB
+         const newUser = new User({
+            name,
+            email,
+            password,
+         });
+         await newUser.save();
+
+         // activation success
+         res
+            .status(200)
+            .json({ msg: "Your account has been activated, you can now sign in." });
       } catch (err) {
          res.status(500).json({ msg: err.message });
       }
