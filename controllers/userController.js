@@ -102,8 +102,8 @@ const userController = {
          if (!isMatch)
             return res.status(400).json({ msg: "This password is incorrect." });
 
-         // refresh token - credential(like a door), user use it to obtain access token 
-         const rf_token = createToken.refresh({ id: user._id });
+         // refresh token - credential(like a door) - store in cookie, user use it to obtain access token 
+         const rf_token = createToken.refresh({ id: user._id }); //id in DB
          res.cookie("_apprftoken", rf_token, {
             httpOnly: true, // not allow people to handle token cookie
             path: "/api/auth/access", // place store token cookie
@@ -114,6 +114,24 @@ const userController = {
          res.status(200).json({ msg: "Signing success" });
       } catch (err) {
          res.status(500).json({ msg: err.message });
+      }
+   },
+   access: async (req, res) => {
+      try {
+         // rf token from server to sign user
+         const rf_token = req.cookies._apprftoken;
+         if (!rf_token) return res.status(400).json({ msg: "Please sign in." });
+
+         // validate
+         jwt.verify(rf_token, process.env.REFRESH_TOKEN, (err, user) => {
+            if (err) return res.status(400).json({ msg: "Please sign in again." });
+            // create access token
+            const ac_token = createToken.access({ id: user.id }); //id from cookie
+            // access success
+            return res.status(200).json({ ac_token });
+         });
+      } catch (err) {
+         return res.status(500).json({ msg: err.message });
       }
    },
 };
