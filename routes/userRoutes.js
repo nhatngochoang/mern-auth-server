@@ -12,5 +12,7 @@ route.post("/api/auth/access", userController.access);
 route.post("/api/auth/forgot_pass", userController.forgot);
 // actions like changing password, avatar ➢ user need to have server auth ➢ middleware check if access token is valid
 route.post("/api/auth/reset_pass", auth, userController.reset);
+route.get("/api/auth/user", auth, userController.info);
+route.patch("/api/auth/user_update", auth, userController.update);
 
 module.exports = route;

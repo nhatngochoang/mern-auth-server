@@ -184,6 +184,29 @@ const userController = {
          res.status(500).json({ msg: err.message });
       }
    },
+   info: async (req, res) => {
+      try {
+         // get info -password
+         const user = await User.findById(req.user.id).select("-password");
+         // return user
+         res.status(200).json({ user });
+      } catch (err) {
+         res.status(500).json({ msg: err.message });
+      }
+   },
+   update: async (req, res) => {
+      try {
+         // get info
+         const { name, avatar } = req.body;
+
+         // update
+         await User.findOneAndUpdate({ _id: req.user.id }, { name, avatar });
+         // success
+         res.status(200).json({ msg: "Update success." });
+      } catch (err) {
+         res.status(500).json({ msg: err.message });
+      }
+   },
 };
 
 module.exports = userController;
