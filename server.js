@@ -1,5 +1,6 @@
 const cookieParser = require("cookie-parser");
 const userRoutes = require('./routes/userRoutes.js')
+const uploadRoutes = require("./routes/uploadRoutes");
 const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
@@ -36,3 +37,4 @@ app.use(cookieParser());
 
 //routes
 app.use(userRoutes)
+app.use(uploadRoutes);

@@ -20,7 +20,7 @@ const userSchema = new Schema(
       },
       avatar: {
          type: String,
-         default: "",
+         default: "https://res.cloudinary.com/dcjxcptdt/image/upload/v1660394027/avatar/vx2x8uegmimyudwsmcdp.jpg",
       },
    },
    { timestamp: true }
