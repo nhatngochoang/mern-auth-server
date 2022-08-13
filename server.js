@@ -3,7 +3,19 @@ const userRoutes = require('./routes/userRoutes.js')
 const uploadRoutes = require("./routes/uploadRoutes");
 const mongoose = require('mongoose');
 const express = require('express');
+const cors = require('cors') // Import cors
+
+// Begin Cors Setup
+var corsOptions = {
+   origin: ['http://localhost:3000'],
+   // origin: 'https://m2-ecommerce-shop-tahn-0102.vercel.app',
+   credentials: true,
+   exposedHeaders: ["set-cookie"],
+   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 const app = express();
+app.use(cors(corsOptions))
 require("dotenv").config();
 
 const opts = {

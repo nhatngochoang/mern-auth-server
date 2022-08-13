@@ -109,7 +109,7 @@ const userController = {
          res.cookie("_apprftoken", rf_token, {
             httpOnly: true, // not allow people to handle token cookie
             path: "/api/auth/access", // place store token cookie
-            maxAage: 24 * 60 * 60 * 1000, // 24h
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
          });
 
          // signing success
